@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Grade Manager</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+    <nav style="margin-bottom: 20px;">
+        <a href="/">Switch to To-Do Manager</a> | <strong>Grades Manager</strong>
+    </nav>
+
+    <h2>Add a New Student Grade</h2>
+    <form action="/submit-grade" method="POST">
+        <label>Student Name:</label><br>
+        <input type="text" name="name" required><br><br>
+        
+        <label>Grade:</label><br>
+        <input type="number" name="grade" required><br><br>
+        
+        <button type="submit">Submit Grade</button>
+    </form>
+
+<hr style="margin-top: 30px;">
+    <h3>Current Student Grades</h3>
+    <ul id="grade-list"><i>Loading data...</i></ul>
+
+    <script>
+        fetch('/api/grades')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('grade-list');
+                list.innerHTML = ''; 
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<li>No grades found in the database.</li>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${item.name}</strong>: ${item.grade}%`;
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => console.error("Error loading grades:", err));
+    </script>
+</body>
+</html>

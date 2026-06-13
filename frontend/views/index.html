@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do Manager</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+    <nav style="margin-bottom: 20px;">
+        <strong>To-Do Manager</strong> | <a href="/grades">Switch to Grades</a>
+    </nav>
+
+    <h2>Add a New To-Do Item</h2>
+    <form action="/submit-todo" method="POST">
+        <label>Item Name:</label><br>
+        <input type="text" name="itemName" required><br><br>
+        
+        <label>Item Description:</label><br>
+        <textarea name="itemDescription" required></textarea><br><br>
+        
+        <label>Item ID:</label><br>
+        <input type="text" name="itemId"><br><br>
+        
+        <label>Item UUID:</label><br>
+        <input type="text" name="itemUuid"><br><br>
+        
+        <label>Item Hash:</label><br>
+        <input type="text" name="itemHash"><br><br>
+        
+        <button type="submit">Submit To-Do</button>
+        
+    </form>
+
+<hr style="margin-top: 30px;">
+    <h3>Current To-Do Items</h3>
+    <ul id="todo-list"><i>Loading data...</i></ul>
+
+    <script>
+        // Fetch the data from our Node.js server when the page loads
+        fetch('/api/todos')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('todo-list');
+                list.innerHTML = ''; // Clear the "Loading" text
+                
+                if (data.length === 0) {
+                    list.innerHTML = '<li>No To-Dos found in the database.</li>';
+                    return;
+                }
+
+                // Loop through the database items and put them in the HTML list
+                data.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${todo.itemName}</strong> - ${todo.itemDescription} <em>(ID: ${todo.itemId || 'N/A'})</em>`;
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => console.error("Error loading todos:", err));
+    </script>
+</body>
+</html>

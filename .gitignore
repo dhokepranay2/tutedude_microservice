@@ -1,0 +1,21 @@
+# Node dependencies
+node_modules/
+npm-debug.log
+
+# Python cache and environments
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env

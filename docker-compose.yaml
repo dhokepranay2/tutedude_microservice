@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      # REPLACE WITH YOUR ACTUAL MONGO URI!
+      - ATLAS_URI=mongodb+srv://${ATLAS_USERNAME}:${ATLAS_USERNAME}@cluster-tutedude.a7b1lkz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster-Tutedude
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Tells Node.js the base URL for the Flask API inside the Docker network
+      - FLASK_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
