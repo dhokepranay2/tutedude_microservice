@@ -26,7 +26,7 @@ def process_grade():
     student_name = data.get('name')
     student_grade = data.get('grade')
 
-    if not grades_collection:
+    if grades_collection is None:
         return jsonify({"status": "error", "message": "Database not connected!"}), 500
 
     try:
@@ -40,7 +40,7 @@ def process_grade():
 def process_todo():
     data = request.json
     
-    if not todo_collection:
+    if todo_collection is None:
         return jsonify({"status": "error", "message": "Database not connected!"}), 500
 
     try:
@@ -58,7 +58,7 @@ def process_todo():
 # --- GET ROUTE: Fetch all Grades ---
 @app.route('/api/grades', methods=['GET'])
 def get_grades():
-    if not grades_collection:
+    if grades_collection is None:
         return jsonify({"error": "Database not connected!"}), 500
         
     grades_list = []
@@ -72,7 +72,7 @@ def get_grades():
 # --- GET ROUTE: Fetch all To-Dos ---
 @app.route('/api/todos', methods=['GET'])
 def get_todos():
-    if not todo_collection:
+    if todo_collection is None:
         return jsonify({"error": "Database not connected!"}), 500
         
     todo_list = []
@@ -81,6 +81,30 @@ def get_todos():
         todo_list.append(todo)
         
     return jsonify(todo_list)
+
+# --- GET ROUTE: Test MongoDB Connection ---
+@app.route('/api/test_db', methods=['GET'])
+def test_db():
+    # First, check if the environment variable made it inside the container
+    if not ATLAS_URI:
+        return jsonify({
+            "status": "error", 
+            "message": "ATLAS_URI is missing! Docker did not read your .env file."
+        }), 500
+    
+    try:
+        # Use PyMongo's built-in 'ping' command to force a connection test
+        client.admin.command('ping')
+        return jsonify({
+            "status": "success", 
+            "message": "✅ Ping successful! Flask is securely connected to MongoDB Atlas."
+        }), 200
+    except Exception as e:
+        # If the password is wrong, or IP is blocked, it will print the exact reason here
+        return jsonify({
+            "status": "error", 
+            "message": f"❌ MongoDB Connection Failed: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     # host='0.0.0.0' is required for Docker
