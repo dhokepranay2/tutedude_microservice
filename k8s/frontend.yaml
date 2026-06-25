@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-frontend
+  namespace: microservices-app
+  labels:
+    app: express-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express-frontend
+  template:
+    metadata:
+      labels:
+        app: express-frontend
+    spec:
+      containers:
+      - name: frontend
+        # Point this to your actual Docker Hub repository
+        image: docker.io/dhokepranay2/node-frontend:latest 
+        # Changed to Always
+        imagePullPolicy: Always 
+        ports:
+         - containerPort: 3000
+        env:
+        - name: FLASK_API_URL 
+          value: "http://flask-backend-service:5000"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-frontend-service
+  namespace: microservices-app
+spec:
+  selector:
+    app: express-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
